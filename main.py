@@ -13,6 +13,8 @@
 
 from itertools import permutations
 
+N = 8
+
 class Queens(object):
     
     def __init__(self):
@@ -31,7 +33,7 @@ class Queens(object):
         x, y = pos
         for slope in [1, -1]:
             b = y - (slope * x)
-            for xkill in range(8):
+            for xkill in range(N):
                 ykill = (slope * xkill) + b
                 if self.__ispositive(xkill) and self.__ispositive(ykill):
                     if (xkill, ykill) != pos:
@@ -41,7 +43,7 @@ class Queens(object):
     def solutions(self):
         '''Get all solutions'''
         solutions = []
-        cur = permutations(range(8))
+        cur = permutations(range(N))
         for s in cur:
             captures = []
             vals = [ i for i in enumerate(s) ]
@@ -59,6 +61,8 @@ def main():
     solutions = q.solutions()
     for s in solutions:
         print s
+        
+    print '\nGot %s solutions\n' % len(solutions)
     
 if __name__ == '__main__':
     main()
