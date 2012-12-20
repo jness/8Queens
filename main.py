@@ -11,13 +11,12 @@
 # to determine all spots a queen can capture on.
 #
 
-# All directions a Queen can capture on.
-SLOPES = [1, -1, 0, None]
+from itertools import permutations
 
 class Queens(object):
     
     def __init__(self):
-        self.board = self.__board()
+        pass
     
     def __ispositive(self, num):
         '''Determine if a number is positive'''
@@ -25,72 +24,41 @@ class Queens(object):
             return True
         else:
             return False
-        
-    def __board(self):
-        '''Create a empty board'''
-        board = {}
-        for x in range(0, 8):
-            board[x] = {}
-            for y in range(0, 8):
-                board[x][y] = None
-        return board
-    
-    def __placed(self):
-        '''Get current placed queens'''
-        return [ (x, y) for x in self.board for y in self.board[x] if self.board[x][y] ]
-                
-    def __captures(self, slope, x, y):
-        '''Get a list of all x,y coords for captures'''
-        if slope != None:
-            yintercept = y - (slope * x)
-            captures = []
-            for xkill in range(0, 8):
-                ykill = (slope * xkill) + yintercept
+            
+    def __points(self, pos):
+        '''Get all points a Queen can capture'''
+        spots = []
+        x, y = pos
+        for slope in [1, -1]:
+            b = y - (slope * x)
+            for xkill in range(8):
+                ykill = (slope * xkill) + b
                 if self.__ispositive(xkill) and self.__ispositive(ykill):
-                    captures.append((xkill, ykill))
-            return captures
-        else:
-            return [ (x, i) for i in range(0, 8) ]
-        
-    def getQueens(self, start=0):
-        '''Place as many uncapturable Queens as possible'''
-        self.board = self.__board()
-        spots = [ (x, y) for x in self.board for y in self.board[x] ]
-        
-        # used to hold our Queens capture spots
-        captures = []
-        
-        # loop over all our spots starting with start
-        while spots:
-            try:
-                x, y = spots.pop(start)
-            except IndexError:
-                x, y = spots.pop(0)
+                    if (xkill, ykill) != pos:
+                        spots.append((xkill, ykill))
+        return spots
+    
+    def solutions(self):
+        '''Get all solutions'''
+        solutions = []
+        cur = permutations(range(8))
+        for s in cur:
+            captures = []
+            vals = [ i for i in enumerate(s) ]
+            for val in vals:
+                captures += self.__points(val)
             
-            # used to hold spots the Queen can capture from a spot
-            spot_captures = []
-            
-            # be sure spot isn't already taken
-            if not self.board[x][y]:
-                
-                # build a capture list
-                for slope in SLOPES:
-                    spot_captures += self.__captures(slope, x, y)
-                
-                # if the queen is uncapturable from here place it
-                if (x,y) not in captures:
-                    self.board[x][y] = True
-                    captures += spot_captures
+            res = [ True for v in vals if v in captures ]
+            if not res:
+                solutions.append(vals)
         
-        # return where all Queens are for this board state
-        return self.__placed()
-
+        return solutions
+                
 def main():
     q = Queens()
-    for i in range(0, 64):
-        res = q.getQueens(start=i)
-        print 'Starting at position %s we have %s uncapturable Queens: \n%s\n' % \
-                (i, len(res), res)
-        
+    solutions = q.solutions()
+    for s in solutions:
+        print s
+    
 if __name__ == '__main__':
     main()
