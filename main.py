@@ -55,14 +55,26 @@ class Queens(object):
                 solutions.append(vals)
         
         return solutions
+    
+    def visual(self, data):
+        for y in reversed(range(N)):
+            print ''
+            for x in range(N):
+                if (x,y) in data:
+                    print 'X',
+                else:
+                    print '.',
+        print '\n'
                 
 def main():
     q = Queens()
     solutions = q.solutions()
-    for s in solutions:
-        print s
+    for s in sorted(solutions):
+        print '\n%s' % sorted(s)
+        q.visual(s)
+        print '\n==================='
         
-    print '\nGot %s solutions\n' % len(solutions)
+    print '\n -- Got %s solutions --\n' % len(solutions)
     
 if __name__ == '__main__':
     main()
